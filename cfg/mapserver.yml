@@ -1,0 +1,9 @@
+endpoint:
+    name: mapserver
+    uri: https://services.arcgisonline.com/arcgis/rest/services/World_Imagery/MapServer/WMTS
+    type: slippy
+    tilematrixset: default028mm    
+    format: jpg
+aoi:
+    pathname: 'C:\Users\Chris.Williams\Desktop\aois.csv'    
+    name: name

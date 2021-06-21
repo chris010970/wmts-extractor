@@ -1,0 +1,11 @@
+endpoint:
+    name: sentinelhub
+    uri: https://services.sentinel-hub.com/ogc/wmts
+    id: 8e7098d5-82aa-4d14-8b21-6dba8850ce77
+    tilematrixset: PopularWebMercator256
+    layer: TRUE-COLOR-S2L2A
+    format: png
+    type: slippy
+aoi:
+    pathname: 'C:\Users\Chris.Williams\Desktop\aois.csv'
+    name: name
