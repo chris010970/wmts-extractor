@@ -81,7 +81,7 @@ class Extractor:
 
                         # check downloads vs max downloads
                         downloads += 1
-                        if args.max_downloads is None or downloads > args.max_downloads:
+                        if args.max_downloads is not None and downloads >= args.max_downloads:
                             print ( f'... exiting after {downloads} downloads' )
                             break
 
