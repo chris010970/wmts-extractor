@@ -49,7 +49,9 @@ class Extractor:
                 inventory = self._endpoint.getInventory( aoi.geometry )
                 if inventory is not None:
                 
+                    # print available scenes
                     self.printInventory( f'Datasets collocated with AoI: {aoi.name}', inventory )
+                    downloads = 0
 
                     # apply filter constraints
                     inventory = self.filterInventory( inventory, args )
@@ -76,6 +78,13 @@ class Extractor:
 
                             # output file already exists - ignore
                             print ( f'output file already exists: {out_pathname}' )
+
+                        # check downloads vs max downloads
+                        downloads += 1
+                        if args.max_downloads is None or downloads > args.max_downloads:
+                            print ( f'... exiting after {downloads} downloads' )
+                            break
+
 
         return
 
