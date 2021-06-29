@@ -33,15 +33,23 @@ class Aoi:
 
             else:
 
-                # transform shapely object to utm
-                proj = Aoi.getUtmTransformation( ( geom.bounds[ 0 ], geom.bounds[ 1 ] ) )
-                geom_utm = transform( proj[ 'geo2utm' ].transform, geom ) 
+                if config.get( 'bbox' ) is not None:
+                
+                    # convert points to bbox 
+                    distance = config.get( 'distance', 1000 )
+                    buffer = Aoi.getBoundingBox( ( geom.centroid.x, geom.centroid.y ), distance )
 
-                # apply buffer (in meters) and convert back to epsg4326
-                distance = config.get( 'distance', 10 )
-                geom_utm = geom_utm.buffer( distance )
+                else:
 
-                buffer = transform( proj[ 'utm2geo' ].transform, geom_utm )
+                    # transform shapely object to utm
+                    proj = Aoi.getUtmTransformation( ( geom.bounds[ 0 ], geom.bounds[ 1 ] ) )
+                    geom_utm = transform( proj[ 'geo2utm' ].transform, geom ) 
+
+                    # apply buffer (in meters) and convert back to epsg4326
+                    distance = config.get( 'distance', 10 )
+                    geom_utm = geom_utm.buffer( distance )
+
+                    buffer = transform( proj[ 'utm2geo' ].transform, geom_utm )
 
             return buffer, distance
 
