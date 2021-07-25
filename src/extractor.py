@@ -50,11 +50,18 @@ class Extractor:
                 if inventory is not None:
                 
                     # print available scenes
-                    self.printInventory( f'Datasets collocated with AoI: {aoi.name}', inventory )
-                    downloads = 0
+                    self.printInventory( f'Image Inventory for AoI: {aoi.name}', inventory )
 
                     # apply filter constraints
                     inventory = self.filterInventory( inventory, args )
+                    self.printInventory( f'Filtered Image Inventory for AoI: {aoi.name}', inventory )
+
+                    # break on info only
+                    if args.info_only:
+                        continue
+
+                    # manage downloads
+                    downloads = 0
                     for record in inventory.itertuples():
 
                         # construct out pathname
@@ -130,13 +137,19 @@ class Extractor:
 
         # set options
         print ( title )
-        with pd.option_context('display.max_rows', None, 'display.max_columns', None, 'display.expand_frame_repr', False, 'max_colwidth', -1 ):  
+        if len( inventory ) > 0:
 
-            # print all columns apart from geoemetry 
-            columns = inventory.columns.to_list()
-            columns.remove( 'geometry' )
+            with pd.option_context('display.max_rows', None, 'display.max_columns', None, 'display.expand_frame_repr', False, 'max_colwidth', -1 ):  
 
-            print( inventory[ columns ] )
+                # print all columns apart from geoemetry 
+                columns = inventory.columns.to_list()
+                columns.remove( 'geometry' )
+
+                print( inventory[ columns ] )
+        else:
+            
+            # report empty inventory in readable way
+            print ( '... no datasets found' )
 
         return
 
