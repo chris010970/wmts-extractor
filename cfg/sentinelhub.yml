@@ -1,11 +1,13 @@
 endpoint:
     name: sentinelhub
     uri: https://services.sentinel-hub.com/ogc/wmts
-    id: XXXXXX
+    id: XXXXX
     tilematrixset: PopularWebMercator256
     layer: TRUE-COLOR-S2L2A
     format: png
     type: slippy
 aoi:
-    pathname: 'C:\Users\Chris.Williams\Desktop\aois.csv'
+    pathname: <pathname-to-aoi-file>
+    bbox: yes
     name: name
+    distance: 1000

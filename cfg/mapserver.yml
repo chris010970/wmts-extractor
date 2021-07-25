@@ -5,5 +5,7 @@ endpoint:
     tilematrixset: default028mm    
     format: jpg
 aoi:
-    pathname: 'C:\Users\Chris.Williams\Desktop\aois.csv'    
+    pathname: 'C:\Users\Chris.Williams\Desktop\kiln-polys-update.shp'    
     name: name
+    bbox: yes
+    distance: 500
