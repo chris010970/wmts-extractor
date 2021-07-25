@@ -28,7 +28,7 @@ class Securewatch ( Endpoint ):
         self._catalog = Catalog( config )
 
         # platform info lut
-        self._platform = {  'WV01' : 'WorldView-01', 
+        self._platforms = { 'WV01' : 'WorldView-01', 
                             'GE01' : 'GeoEye-01', 
                             'WV02' : 'WorldView-02', 
                             'WV03_VNIR' : 'WorldView-03', 
@@ -51,16 +51,18 @@ class Securewatch ( Endpoint ):
         records = []
         for feature in features:
 
-            # create and append feature record
-            footprint = self.getFootprint ( feature )
-            records.append ( {  'platform' : self._platform[ feature[ 'DigitalGlobe:source' ]  ],
-                                'uid' : feature[ 'DigitalGlobe:featureId' ],
-                                'product' : feature[ 'DigitalGlobe:productType' ],
-                                'acq_datetime' : datetime.strptime( feature[ 'DigitalGlobe:acquisitionDate' ], '%Y-%m-%d %H:%M:%S' ),
-                                'cloud_cover' : float( feature[ 'DigitalGlobe:cloudCover' ] ) if 'DigitalGlobe:cloudCover' in feature else None,
-                                'resolution' : self.getResolution ( feature ), 
-                                'geometry' : footprint,
-                                'overlap' : ( aoi.intersection( footprint ).area / aoi.area ) * 100 } )
+            if feature[ 'DigitalGlobe:source' ] in self._platforms:
+
+                # create and append feature record
+                footprint = self.getFootprint ( feature )
+                records.append ( {  'platform' : self._platforms[ feature[ 'DigitalGlobe:source' ]  ],
+                                    'uid' : feature[ 'DigitalGlobe:featureId' ],
+                                    'product' : feature[ 'DigitalGlobe:productType' ],
+                                    'acq_datetime' : datetime.strptime( feature[ 'DigitalGlobe:acquisitionDate' ], '%Y-%m-%d %H:%M:%S' ),
+                                    'cloud_cover' : float( feature[ 'DigitalGlobe:cloudCover' ] ) if 'DigitalGlobe:cloudCover' in feature else None,
+                                    'resolution' : self.getResolution ( feature ), 
+                                    'geometry' : footprint,
+                                    'overlap' : ( aoi.intersection( footprint ).area / aoi.area ) * 100 } )
 
         return  gpd.GeoDataFrame( records, crs='EPSG:4326' ) if len( records ) > 0 else None
         
