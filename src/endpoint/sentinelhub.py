@@ -1,7 +1,5 @@
 import os
 import pyproj
-import pycurl
-import certifi
 import xmltodict
 import tempfile
 import pandas as pd
@@ -26,8 +24,8 @@ class Sentinelhub ( Endpoint ):
         self._catalog = Catalog( config, args )
 
         # create transformations
-        self._proj = { 'geo' : pyproj.Proj( 'epsg:4326', ellps='WGS84' ) }
-        self._proj[ 'web' ] =  pyproj.Proj( 'epsg:3857', ellps='WGS84' )
+        self._proj = { 'geo' : pyproj.Proj( init='epsg:4326', ellps='WGS84' ) }
+        self._proj[ 'web' ] =  pyproj.Proj( init='epsg:3857', ellps='WGS84' )
 
         self._proj[ 'geo2web' ] = pyproj.Transformer.from_proj( self._proj[ 'geo' ], self._proj[ 'web' ] )
         self._proj[ 'web2geo' ] = pyproj.Transformer.from_proj( self._proj[ 'web' ], self._proj[ 'geo' ] )
@@ -45,8 +43,8 @@ class Sentinelhub ( Endpoint ):
         with tempfile.TemporaryDirectory() as tmp_path:
 
             # transform latlon to web mercator 
-            bbox = list( self._proj[ 'geo2web' ].transform( aoi.bounds[ 1 ], aoi.bounds[ 0 ] ) )
-            bbox.extend( list ( self._proj[ 'geo2web' ].transform( aoi.bounds[ 3 ], aoi.bounds[ 2 ] ) ) )
+            bbox = list( self._proj[ 'geo2web' ].transform( aoi.bounds[ 0 ], aoi.bounds[ 1 ] ) )
+            bbox.extend( list ( self._proj[ 'geo2web' ].transform( aoi.bounds[ 2 ], aoi.bounds[ 3 ] ) ) )
 
             features = self._catalog.getFeatures( bbox, tmp_path )
 
@@ -150,11 +148,13 @@ class Catalog ( WfsCatalog ):
 
         # root url of wfs server
         super().__init__( config )
+        self._typenames = 'S2.TILE'
         self._root =    'https://services.sentinel-hub.com/ogc/wfs/{id}?' \
-                        'REQUEST=GetFeature&srsName=EPSG:3857&TYPENAMES=DSS2' \
+                        'REQUEST=GetFeature&srsName=EPSG:3857&TYPENAMES={typenames}' \
                         '&TIME={start_datetime}/{end_datetime}' \
                         '&MAXCC={max_cloud}' \
                         '&BBOX={{bbox}}'.format (   id=config.id, 
+                                                    typenames=self._typenames,
                                                     start_datetime=args.start_datetime.strftime( '%Y-%m-%d'),
                                                     end_datetime=args.end_datetime.strftime( '%Y-%m-%d'),
                                                     max_cloud=args.max_cloud )
@@ -179,7 +179,7 @@ class Catalog ( WfsCatalog ):
                 doc = xmltodict.parse( fd.read() )
 
                 # extract and record feature schemas 
-                schemas = self.findItems( doc, 'DSS2' )
+                schemas = self.findItems( doc, self._typenames )
                 for schema in schemas:
                     features.append( schema )                
 
