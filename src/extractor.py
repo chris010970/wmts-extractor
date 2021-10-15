@@ -1,10 +1,10 @@
 import os
-import ogr
 import json
 import pandas as pd
 import geopandas as gpd
 
 from aoi import Aoi
+from osgeo import ogr
 from downloader import Downloader
 from shapely.geometry import shape
 

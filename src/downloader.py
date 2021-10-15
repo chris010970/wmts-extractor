@@ -57,7 +57,7 @@ class Downloader:
         config = {  'tiler' : self._tiler, 
                     'options' : self._options, 
                     'credentials' : self._credentials, 
-                    'geometry' : None if aoi.type is 'Point' else aoi.geometry  } # geometry assumed rectangualar if original point-based
+                    'geometry' : None if aoi.type == 'Point' else aoi.geometry  } # geometry assumed rectangualar if original point-based
 
         # get tile x, y limits of bbox
         x1, y1, x2, y2 = self.getTileMinMax( aoi.geometry.bounds, args.zoom )

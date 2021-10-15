@@ -1,14 +1,7 @@
 import os
-import pycurl
-import certifi
-import xmltodict
-import tempfile
-import pandas as pd
 import geopandas as gpd
 
-from datetime import datetime
 from endpoint.base import Endpoint
-from shapely.geometry import Polygon
 
 class Mapserver ( Endpoint ):
 

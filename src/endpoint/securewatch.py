@@ -1,6 +1,4 @@
 import os
-import pycurl
-import certifi
 import xmltodict
 import tempfile
 import pandas as pd
@@ -95,7 +93,7 @@ class Securewatch ( Endpoint ):
                                 img_format=self._config.format,
                                 id=self._config.id,
                                 layer=self._config.layer,
-                                tilematrixset=self._config.tilematrixset,
+                                tilematrixset=self._config.tilematrix,
                                 feature_id=record.uid )
 
     
