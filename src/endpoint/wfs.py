@@ -1,8 +1,5 @@
 import os
-import pycurl
-import certifi
-import xmltodict
-
+import requests
 
 class WfsCatalog():
 
@@ -23,27 +20,19 @@ class WfsCatalog():
         download feature info xml file
         """
 
-        # setup curl object - include ssl certificates
-        curl = pycurl.Curl()
-        curl.setopt(pycurl.CAINFO, certifi.where())
-        curl.setopt(pycurl.URL, uri )
-
-        # config authentication
-        if self._credentials is not None:
-            curl.setopt( pycurl.USERPWD, "{}:{}".format( self._credentials.username, self._credentials.password ) )
-
         # create output path
         if not os.path.exists( os.path.dirname ( out_pathname ) ):
             os.makedirs( os.path.dirname ( out_pathname ) )
 
-        # write binary data to file
-        fp = open( out_pathname, "wb" )
-        curl.setopt(pycurl.WRITEDATA, fp)
-        curl.perform()
+        # optionally create auth tuple
+        auth = None
+        if self._credentials is not None:
+            auth = ( self._credentials.username, self._credentials.password )
 
-        # close object and file
-        curl.close()
-        fp.close()
+        # request catalog file from server
+        with requests.get(uri, auth=auth, stream=True) as r:
+            with open(out_pathname, 'w') as f:
+                f.write(r.text)
 
         return
 

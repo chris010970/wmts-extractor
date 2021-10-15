@@ -1,8 +1,8 @@
 import os
 import time
 import random
-import pycurl
-import certifi
+import requests
+import shutil
 
 from tiler import SlippyTiler
 from threading import Thread
@@ -13,7 +13,7 @@ from shapely import geometry
 
 class TileScraper( Thread ):
 
-    def __init__( self, idx, tasks, config, verbose=False ):
+    def __init__( self, idx, tasks, config, verbose=True ):
 
         """
         constructor
@@ -111,27 +111,19 @@ class TileScraper( Thread ):
 
                 try:
 
-                    # setup curl object - include ssl certificates
-                    curl = pycurl.Curl()
-                    curl.setopt(pycurl.CAINFO, certifi.where())
-                    curl.setopt(pycurl.URL, uri )
-
-                    # config authentication
-                    if self._credentials is not None:
-                        curl.setopt( pycurl.USERPWD, "{}:{}".format( self._credentials[ 'username'], self._credentials[ 'password' ] ) )
-
                     # writeback if enabled
                     if self._verbose:
                         print ( '{}: {} -> {}'. format( self._idx, uri, pathname ) )
 
-                    # write binary data to file
-                    fp = open( pathname, "wb" )
-                    curl.setopt(pycurl.WRITEDATA, fp)
-                    curl.perform()
+                    # optionally create auth tuple
+                    auth=None
+                    if self._credentials is not None:
+                        auth = (self._credentials[ 'username'], self._credentials[ 'password' ])
 
-                    # close object and file
-                    curl.close()
-                    fp.close()
+                    # use requests to get tile image
+                    with requests.get( uri, auth=auth, stream=True) as r:
+                        with open( pathname, 'wb') as f:
+                            shutil.copyfileobj(r.raw, f)
 
                     break
 
