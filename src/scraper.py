@@ -9,11 +9,13 @@ from threading import Thread
 
 from osgeo import gdal
 from shapely import geometry
+from shapely.ops import transform
 
+import pyproj
 
 class TileScraper( Thread ):
 
-    def __init__( self, idx, tasks, config, verbose=True ):
+    def __init__( self, idx, tasks, config, verbose=False ):
 
         """
         constructor
@@ -31,8 +33,19 @@ class TileScraper( Thread ):
         self._credentials = config[ 'credentials' ]        
         self._verbose = verbose
 
-        # geometry
-        self._geometry = config[ 'geometry' ] if 'geometry' in config else None
+        # config geometry
+        self._geometry = None 
+        if 'geometry' in config:
+            
+            self._geometry = config[ 'geometry' ]
+
+            # reproject aoi from geographic to mercator
+            project = pyproj.Transformer.from_proj(
+                            pyproj.Proj(init='epsg:4326'),
+                            pyproj.Proj(init='epsg:3857'))
+
+            self._geometry = transform(project.transform, self._geometry ) 
+
         self._tiles = []
         return
 

@@ -88,7 +88,7 @@ class Sentinelhub ( Endpoint ):
                                                 date=record.acq_datetime.strftime('%Y-%m-%d') )
 
 
-    def getPathname( self, record, aoi ):
+    def getPathname( self, aoi, record ):
 
         """
         get pathname 

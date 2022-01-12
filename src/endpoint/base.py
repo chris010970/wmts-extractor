@@ -24,7 +24,7 @@ class Endpoint:
         pass
 
     @abc.abstractmethod
-    def getPathname( self, record, aoi ):
+    def getPathname( self, aoi, record ):
         pass
 
     def filterInventory( self, inventory ):

@@ -97,7 +97,7 @@ class Securewatch ( Endpoint ):
                                 feature_id=record.uid )
 
     
-    def getPathname( self, record, aoi ):
+    def getPathname( self, aoi, record ):
 
         """
         get pathname 

@@ -1,0 +1,10 @@
+endpoint:
+    name: earthservice
+    id: ca613e76-811f-46e7-9e1d-84f6795441c2
+    uri: https://services.digitalglobe.com/earthservice/
+    type: mercator
+    layer: DigitalGlobe:ImageryTileService
+    format: png
+    tilematrixset: EPSG:3857
+aoi:
+    pathname: C:\Users\crwil\Documents\GitHub\amenity.shp

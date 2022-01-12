@@ -11,6 +11,7 @@ from shapely.geometry import shape
 from endpoint.mapserver import Mapserver
 from endpoint.sentinelhub import Sentinelhub
 from endpoint.securewatch import Securewatch
+from endpoint.earthservice import Earthservice
 
 class Extractor:
 
@@ -28,7 +29,39 @@ class Extractor:
 
         return
 
+
+    def processAoI( self, aoi, record, args ):
+
+        """
+        extract single aoi 
+        """
+
+        # construct out pathname
+        out_pathname = os.path.join( args.root_path, self._endpoint.getPathname( aoi, record ) )
+        
+        # check pathname exists or overwrite 
+        if not os.path.exists( out_pathname ) or args.overwrite:
     
+            if not os.path.exists( os.path.dirname ( out_pathname ) ):
+                os.makedirs( os.path.dirname ( out_pathname ) )
+
+            # retrieve images aligned with constraints            
+            print ( f'downloading : {out_pathname}' )
+            self._downloader.process(   self._endpoint.getUri( record ),
+                                        aoi, 
+                                        args, 
+                                        out_pathname )
+
+            print ( '... OK!' )
+
+        else:
+
+            # output file already exists - ignore
+            print ( f'output file already exists: {out_pathname}' )
+
+        return out_pathname
+
+
     def process( self, config, args ):
 
         """
@@ -65,7 +98,7 @@ class Extractor:
                     for record in inventory.itertuples():
 
                         # construct out pathname
-                        out_pathname = os.path.join( root_path, self._endpoint.getPathname( record, aoi ) )
+                        out_pathname = os.path.join( root_path, self._endpoint.getPathname( aoi, record ) )
                         
                         # check pathname exists or overwrite 
                         if not os.path.exists( out_pathname ) or args.overwrite:
@@ -182,3 +215,4 @@ class Extractor:
 
         # endpoint specific filtering
         return self._endpoint.filterInventory( inventory )
+

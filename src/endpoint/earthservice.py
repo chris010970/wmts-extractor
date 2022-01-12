@@ -1,9 +1,10 @@
 import os
+import pandas as pd
 import geopandas as gpd
 
 from endpoint.base import Endpoint
 
-class Mapserver ( Endpoint ):
+class Earthservice ( Endpoint ):
 
     def __init__( self, config, args ):
 
@@ -13,7 +14,7 @@ class Mapserver ( Endpoint ):
 
         # initialise base object
         super().__init__( config, args )
-        self._prefix = 'tile/1.0.0/World_Imagery/default'
+        self._prefix = 'tmsaccess/tms/1.0.0'
 
         return
 
@@ -32,10 +33,9 @@ class Mapserver ( Endpoint ):
                             'cloud_cover' : 0.0,
                             'geometry' : aoi } )
 
-        return  gpd.GeoDataFrame( records, crs='EPSG:4326' )
+        return  gpd.GeoDataFrame( records, crs='EPSG:3857' )
         
         
-
     def getUri( self, _ ):
 
         """
@@ -43,10 +43,11 @@ class Mapserver ( Endpoint ):
         """
 
         # generate template uri including record feature id
-        return  "{root}/{prefix}/{tilematrixset}/{{z}}/{{y}}/{{x}}.jpeg".format (   root=self._config.uri,
-                                                                                    prefix=self._prefix,
-                                                                                    tilematrixset=self._config.tilematrixset  )
-
+        return  "{root}/{prefix}/{layer}/{tilematrixset}/{{z}}/{{x}}/{{y}}.png?connectId={id}".format ( root=self._config.uri,
+                                                                                                prefix=self._prefix,
+                                                                                                layer=self._config.layer,
+                                                                                                tilematrixset=self._config.tilematrixset,
+                                                                                                id=self._config.id  )
 
     def getPathname( self, aoi, _ ):
 
